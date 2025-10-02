@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongooseDelete from "mongoose-delete";
 
 const usuarioSchema = new mongoose.Schema({
     Nombre: { type: String, required: true, minLength: 3, match: [/^[\p{L}\s]+$/u, 'El nombre solo puede contener letras'] },
@@ -12,6 +13,11 @@ const usuarioSchema = new mongoose.Schema({
         return this.Rol == 'propietario' ? 'plus' : undefined;
     } },
 }, { timestamps: true })
+
+usuarioSchema.plugin(mongooseDelete, {
+    deleteAt: true,
+    overrideMethods: 'all'
+})
 
 usuarioSchema.virtual('mascotas', {
     ref: 'Mascota',
