@@ -1,0 +1,11 @@
+# node
+node_modules/
+
+# dotenv
+.env
+
+# logs
+logs/
+
+# vscode
+.vscode/
