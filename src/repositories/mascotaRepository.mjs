@@ -1,6 +1,7 @@
 import Mascota from '../models/mascota.mjs';
 
 const mascotaRepository = {
+
     async crearMascota(data) {
         try { 
             const mascota = new Mascota(data);
@@ -11,7 +12,15 @@ const mascotaRepository = {
         }
     },
 
-    async obtenerMascotaPorId(id) {
+    async obtenerMascotas() {
+        try{
+            return await Mascota.find().populate('Propietario', '-Password');
+        }catch (error) {
+            console.error("Error al obtener mascotas:", error);
+        }
+    },
+
+    async obtenerPorId(id) {
         try{
             return await Mascota.findById(id).populate('Propietario', '-Password');
         }catch (error) {
@@ -19,7 +28,7 @@ const mascotaRepository = {
         }
     },
 
-    async obtenerMascotaPorPropietario(propietarioId) {
+    async obtenerPorPropietario(propietarioId) {
         try{
             return await Mascota.find({ Propietario: propietarioId }).populate('Propietario', '-Password');
         }catch (error) {
@@ -27,7 +36,7 @@ const mascotaRepository = {
         }
     },
 
-    async actualizarMascota(id, data) {
+    async editarMascota(id, data) {
         try {
             const mascotaActualizada = await Mascota.findOneAndUpdate(
                 { _id: id },
@@ -41,9 +50,8 @@ const mascotaRepository = {
     },
 
     async eliminarMascota(id) {
-        try {
-            const mascotaEliminada = await Mascota.delete({ _id: id });
-            return mascotaEliminada;
+        try {            
+            return await Mascota.findByIdAndDelete(id);
         } catch (error) {
             console.error("Error al eliminar mascota:", error);
         }

@@ -12,7 +12,7 @@ const categoriaRepository = {
         }
     },
 
-    async obtenerCategoriaPorId(id) {
+    async obtenerPorId(id) {
         try {
             return await Categoria.findById(id);
         } catch (error) {
@@ -20,7 +20,7 @@ const categoriaRepository = {
         }
     },
 
-    async obtenerTodasLasCategorias() {
+    async obtenerCategorias() {
         try {
             return await Categoria.find();
         } catch (error) {
@@ -28,7 +28,7 @@ const categoriaRepository = {
         }
     },
 
-    async actualizarCategoria(id, data) {
+    async editarCategoria(id, data) {
         try {
             const categoriaActualizada = await Categoria.findOneAndUpdate(
                 { _id: id },
@@ -43,7 +43,7 @@ const categoriaRepository = {
 
     async eliminarCategoria(id) {
         try {
-            const categoriaEliminada = await Categoria.delete({ _id: id });
+            const categoriaEliminada = await Categoria.findByIdAndDelete(id);
             return categoriaEliminada;
         } catch (error) {
             console.error("Error al eliminar categoria:", error);

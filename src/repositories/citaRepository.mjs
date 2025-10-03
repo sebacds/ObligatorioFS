@@ -1,6 +1,7 @@
 import Cita from '../models/cita.mjs';
 
 const citaRepository = {
+
     async crearCita(data) {
         try { 
             const cita = new Cita(data);
@@ -11,7 +12,7 @@ const citaRepository = {
         }
     },
 
-    async obtenerCitaPorId(id) {
+    async obtenerPorId(id) {
         try{
             return await Cita.findById(id)
             .populate('Propietario', '-Password');
@@ -20,7 +21,7 @@ const citaRepository = {
         }
     },
 
-    async obtenerCitaPorPropietario(propietarioId) {
+    async obtenerPorPropietario(propietarioId) {
         try{
             return await Cita.find({ Propietario: propietarioId })
             .populate('Propietario', '-Password');
@@ -29,7 +30,7 @@ const citaRepository = {
         }
     },
 
-    async obtenerCitaPorFechas(fechaInicio, fechaFin) {
+    async obtenerPorFechas(fechaInicio, fechaFin) {
         try{
             return await Cita.find({
                 Fecha: { $gte: fechaInicio, $lte: fechaFin }
@@ -39,7 +40,15 @@ const citaRepository = {
         }
     },
 
-    async actualizarCita(id, data) {
+    async obtenerPorMascota(mascotaId) {
+        try{
+            return await Cita.find({ Mascota: mascotaId }).populate('Propietario', '-Password');
+        }catch (error) {
+            console.error("Error al obtener cita por mascota:", error);
+        }
+    },
+
+    async editarCita(id, data) {
         try{
             return await Cita.findByIdAndUpdate(id, data, { new: true });
         }catch (error) {

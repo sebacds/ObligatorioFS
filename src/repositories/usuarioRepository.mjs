@@ -12,7 +12,7 @@ const usuarioRepository = {
         }
     },
 
-    async obtenerUsuarioPorEmail(email) {
+    async obtenerPorEmail(email) {
         try {
             return await Usuario.findOne({ Email: email });
         } catch (error) {
@@ -20,7 +20,7 @@ const usuarioRepository = {
         }
     },
 
-    async obtenerUsuarioPorId(id) {
+    async obtenerPorId(id) {
         try {
             return await Usuario.findById(id);
         } catch (error) {
@@ -28,7 +28,7 @@ const usuarioRepository = {
         }
     },
 
-    async actualizarUsuario(id, data) {
+    async editarUsuario(id, data) {
         try {
             const usuarioActualizado = await Usuario.findOneAndUpdate(
                 { _id: id },
