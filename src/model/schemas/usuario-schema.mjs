@@ -12,6 +12,9 @@ const usuarioSchema = new mongoose.Schema({
     }, default: () => {
         return this.Rol == 'propietario' ? 'plus' : undefined;
     } },
+    MetodoPago: { type: String, enum: ['debito', 'credito'], default: null },
+    FechaUltimoPago: { type: Date, default: null },
+    SuscripcionActiva: { type: Boolean, default: false }
 }, { timestamps: true })
 
 usuarioSchema.plugin(mongooseDelete, {

@@ -1,11 +1,12 @@
 import express from 'express';
-// importar controladores (registro y login)
-// importar middlewares
-import reqValidate from '../../constants/request-validate-constants.mjs'
+import reqValidate from '../../constants/request-validate-constants.mjs';
+import { crearUsuario, iniciarSesion, } from '../../controllers/publicas-controller.mjs';
+import { validarSignup, validarLogin } from '../../validations/publicas-validations.mjs';
+import validarRequest from '../../middlewares/validation-middleware.mjs';
 
 const routes = express.Router();
 
-// routes.post('/signup', validateRequest(validateSignup, reqValidate.BODY), createUser);
-// routes.post('/login', validateRequest(validateLogin, reqValidate.BODY), loginUser);
+routes.post('/signup', validarRequest(validarSignup, reqValidate.BODY), crearUsuario);
+routes.post('/login', validarRequest(validarLogin, reqValidate.BODY), iniciarSesion);
 
 export default routes;
