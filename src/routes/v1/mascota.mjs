@@ -4,7 +4,6 @@ import { crearMascota, obtenerMascotaPorId, obtenerMascotasPorPropietario, edita
 import { validarCrearMascota, validarObtenerMascotaPorId, validarObtenerMascotasPorPropietario, validarEditarMascota, validarEliminarMascota } from '../../validations/mascota-validations.mjs';
 import validarRequest from '../../middlewares/validation-middleware.mjs';
 import authMiddleware from '../../middlewares/auth-middleware.mjs';
-import validarRolMiddleware from '../../middlewares/validar-rol-middleware.mjs';
 
 const routes = express.Router();
 
