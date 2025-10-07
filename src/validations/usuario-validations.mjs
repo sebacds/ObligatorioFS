@@ -18,8 +18,7 @@ export const validarCrearUsuario = Joi.object({
         otherwise: Joi.forbidden()
     }),
     metodoPago: Joi.string().valid('debito', 'credito').allow(null).default(null),
-    fechaUltimoPago: Joi.date().allow(null).default(null),
-    suscripcionActiva: Joi.boolean().default(false)
+    fechaPago: Joi.date().allow(null).default(null)
 });
 
 export const validarObtenerUsuarioPorId = Joi.object({
@@ -39,16 +38,11 @@ export const validarEditarUsuario = Joi.object({
             'string.pattern.base': 'El apellido solo puede contener letras'
         }),
     email: Joi.string().email().lowercase().trim(),
-    password: Joi.string().min(8),
-    plan: Joi.string().valid('plus', 'premium'),
-    metodoPago: Joi.string().valid('debito', 'credito').allow(null),
-    fechaUltimoPago: Joi.date().allow(null),
-    suscripcionActiva: Joi.boolean()
+    password: Joi.string().min(8)
 }).min(1);
 
 export const validarPagar = Joi.object({
-    metodoPago: Joi.string().valid('debito', 'credito').required(),
-    plan: Joi.string().valid('plus', 'premium').required()
+    metodoPago: Joi.string().valid('debito', 'credito').required()
 });
 
 export const validarEliminarUsuario = Joi.object({

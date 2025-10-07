@@ -1,6 +1,6 @@
 import express from 'express';
 import reqValidate from '../../constants/request-validate-constants.mjs';
-import { obtenerUsuarioPorId, editarUsuario, pagar, eliminarUsuario, cerrarSesion } from '../../controllers/usuario-controller.mjs';
+import { obtenerPerfil, editarPerfil, eliminarPerfil, pagar, obtenerUsuarios, obtenerUsuarioPorId, editarUsuarioPorId, eliminarUsuarioPorId } from '../../controllers/usuario-controller.mjs';
 import { validarObtenerUsuarioPorId, validarEditarUsuario, validarPagar, validarEliminarUsuario } from '../../validations/usuario-validations.mjs';
 import validarRequest from '../../middlewares/validation-middleware.mjs';
 import authMiddleware from '../../middlewares/auth-middleware.mjs';
@@ -10,13 +10,17 @@ const routes = express.Router();
 
 routes.use(authMiddleware);
 
+routes.get('/perfil', obtenerPerfil);
+routes.put('/perfil', validarRequest(validarEditarUsuario, reqValidate.BODY), editarPerfil);
+routes.delete('/perfil', eliminarPerfil);
+
+routes.post('/pagar', validarRolMiddleware(['propietario']), validarRequest(validarPagar, reqValidate.BODY), pagar);
+
+routes.use(validarRolMiddleware(['admin']));
+routes.get('/', obtenerUsuarios);
 routes.get('/:id', validarRequest(validarObtenerUsuarioPorId, reqValidate.PARAMS), obtenerUsuarioPorId);
-routes.put('/:id', validarRequest(validarEditarUsuario, reqValidate.BODY), editarUsuario);
-routes.delete('/:id', validarRequest(validarEliminarUsuario, reqValidate.PARAMS), eliminarUsuario);
-routes.post('/logout', cerrarSesion);
+routes.put('/:id', validarRequest(validarEditarUsuario, reqValidate.BODY), editarUsuarioPorId);
+routes.delete('/:id', validarRequest(validarEliminarUsuario, reqValidate.PARAMS), eliminarUsuarioPorId);
 
-routes.use(validarRolMiddleware(['propietario']));
-
-routes.post('/pagar', validarRequest(validarPagar, reqValidate.BODY), pagar);
 
 export default routes;

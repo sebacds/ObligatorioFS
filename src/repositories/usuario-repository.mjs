@@ -18,7 +18,7 @@ const usuarioRepository = {
     },
 
     async eliminarUsuario(id) {
-        return await Usuario.delete({ _id: id });
+        return await Usuario.delete(id);
     }
 };
 
