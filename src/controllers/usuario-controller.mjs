@@ -127,16 +127,26 @@ export const eliminarUsuario = async (req, res) => {
     }
 };
 
-export const pagarSuscripcion = async (req, res) => {
-    const { id } = req.params;
+export const pagar = async (req, res) => {
+    const { MetodoPago } = req.body;
+    const id = req.usuario.id;
+
     try {
         const usuario = await usuarioRepository.obtenerPorId(id);
         if (!usuario) {
             return res.status(404).json({ error: "Usuario no encontrado" });
         }
-        // TODO: Lógica para procesar el pago de la suscripción
-        res.status(200).json({ message: "Pago de suscripción procesado con éxito" });
+
+        const data = {
+            MetodoPago: MetodoPago,
+            Plan: 'premium',
+            FechaPago: new Date()
+        }
+
+        await usuarioRepository.editarUsuario(id, data);
+
+        res.status(200).json({ message: "Pago procesado con éxito" });
     } catch (error) {
-        res.status(500).json({ error: "Error al procesar el pago de la suscripción" });
+        res.status(500).json({ error: "Error al procesar el pago" });
     }
 }
