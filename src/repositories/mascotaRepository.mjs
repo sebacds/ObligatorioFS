@@ -36,11 +36,12 @@ const mascotaRepository = {
         }
     },
 
-    async editarMascota(id, data) {
+    async editarMascota(data) { 
         try {
+            const { id, mascota } = data;
             const mascotaActualizada = await Mascota.findOneAndUpdate(
                 { _id: id },
-                { $set: data },
+                { $set: mascota },
                 { new: true }
             ).populate('Propietario', '-Password');
             return mascotaActualizada;

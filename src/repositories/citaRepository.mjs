@@ -29,9 +29,10 @@ const citaRepository = {
             console.error("Error al obtener cita por propietario:", error);
         }
     },
-
-    async obtenerPorFechas(fechaInicio, fechaFin) {
+    
+    async obtenerPorFechas(data) { 
         try{
+            const { fechaInicio, fechaFin } = data;
             return await Cita.find({
                 Fecha: { $gte: fechaInicio, $lte: fechaFin }
             }).populate('Propietario', '-Password');
@@ -48,9 +49,10 @@ const citaRepository = {
         }
     },
 
-    async editarCita(id, data) {
+    async editarCita(data) {
         try{
-            return await Cita.findByIdAndUpdate(id, data, { new: true });
+            const { id, cita } = data;
+            return await Cita.findByIdAndUpdate(id, cita, { new: true });
         }catch (error) {
             console.error("Error al actualizar cita:", error);
         }

@@ -1,4 +1,4 @@
-import Usuario from "../models/Usuario.mjs";
+import Usuario from "../models/usuario.mjs";
 
 const usuarioRepository = {
     async crearUsuario(data) {
@@ -28,16 +28,19 @@ const usuarioRepository = {
         }
     },
 
-    async editarUsuario(id, data) {
+    async editarUsuario(data) {
         try {
             const usuarioActualizado = await Usuario.findOneAndUpdate(
-                { _id: id },
+                { _id: data._id },              
                 { $set: data },
-                { new: true }
+                {
+                    new: true
+                }
             );
             return usuarioActualizado;
         } catch (error) {
             console.error("Error al actualizar usuario:", error);
+            throw error;
         }
     },
 

@@ -15,7 +15,7 @@ const authMiddleware = async (req, res, next) => {
 
         if (error) return res.status(401).json({ errors: error.details.map(d => d.message) });
 
-        req.usuario = usuario;
+        req.usuario = value;
         next();
     } catch (error) {
         switch (error.name) {

@@ -1,6 +1,6 @@
 import express from 'express';
 import reqValidate from '../../constants/request-validate-constants.mjs';
-import { crearUsuario, iniciarSesion, } from '../../controllers/publicas-controller.mjs';
+import { crearUsuario } from '../../controllers/usuario-controller.mjs';
 import { validarSignup, validarLogin } from '../../validations/publicas-validations.mjs';
 import validarRequest from '../../middlewares/validation-middleware.mjs';
 

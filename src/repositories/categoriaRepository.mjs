@@ -28,11 +28,12 @@ const categoriaRepository = {
         }
     },
 
-    async editarCategoria(id, data) {
+    async editarCategoria(data) {
         try {
+            const { id, categoria } = data;
             const categoriaActualizada = await Categoria.findOneAndUpdate(
                 { _id: id },
-                { $set: data },
+                { $set: categoria },
                 { new: true }
             );
             return categoriaActualizada;
