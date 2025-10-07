@@ -1,16 +1,30 @@
-import mascotaRepository from "../repositories/mascotaRepository.mjs";
+import mascotaRepository from "../repositories/mascota-repository.mjs";
 
 export const crearMascota = async (req, res) => {
     try {
-        const nuevaMascota = req.body;
-        const { Nombre, FechaNacimiento, Categoria, Propietario } = nuevaMascota;
-        const mascotasProp = obtenerMascotasPorPropietario(Propietario._id);
-        if(mascotasProp.find(m => m.Nombre === Nombre && m.FechaNacimiento === FechaNacimiento && m.Categoria === Categoria)){
+        const { Nombre, FechaNacimiento, Categoria, Propietario } = req.body;
+        
+        // Validar que Propietario existe
+        if (!Propietario || !Propietario._id) {
+            return res.status(400).json({ error: "Propietario es requerido" });
+        }
+        
+        // Obtener mascotas del propietario usando el repository
+        const mascotasProp = await mascotaRepository.obtenerPorPropietario(Propietario._id);
+        
+        // Verificar duplicados
+        if(mascotasProp && mascotasProp.find(m => 
+            m.Nombre === Nombre && 
+            m.FechaNacimiento === FechaNacimiento && 
+            m.Categoria === Categoria
+        )){
             return res.status(409).json({ error: "La mascota ya existe para este propietario" });
         }
+        
         const mascotaCreada = await mascotaRepository.crearMascota({Nombre, FechaNacimiento, Categoria, Propietario});
         res.status(201).json(mascotaCreada);
     } catch (error) {
+        console.error("Error al crear mascota:", error);
         res.status(500).json({ error: "Error al crear la mascota" });
     }
 };

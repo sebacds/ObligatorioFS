@@ -1,8 +1,12 @@
-import categoriaRepository from "../repositories/categoriaRepository.mjs";
+import categoriaRepository from "../repositories/categoria-repository.mjs";
 
 export const crearCategoria = async (req, res) => {
     const { nombre } = req.body;
     try {
+        const categoriaExistente = await categoriaRepository.obtenerPorNombre({nombre: nombre});
+        if (categoriaExistente) {
+            return res.status(409).json({ error: "La categoría ya existe" });
+        }
         const nuevaCategoria = await categoriaRepository.crearCategoria({ nombre });
         res.status(201).json(nuevaCategoria);
     } catch (error) {
@@ -23,17 +27,27 @@ export const obtenerCategorias = async (req, res) => {
 };
 
 export const editarCategoria = async (req, res) => {
-    const data = req.body;
+    const { id } = req.params; // AGREGAR: Obtener ID desde params
+    const { nombre } = req.body; // CAMBIAR: Usar nombre específico
+    
     try {
-        const categorias = await categoriaRepository.obtenerCategorias();
-        const categoriaExistente = categorias.find(c => c.nombre === data.nombre);
-        if (categoriaExistente) {
-            return res.status(409).json({ error: "La categoría ya existe" });
+        if (!nombre || nombre.trim() === '') {
+            return res.status(400).json({ error: "El nombre es requerido" });
         }
-        const categoriaActualizada = await categoriaRepository.editarCategoria(data);
-        if (!categoriaActualizada) {
+        
+        const categoriaActual = await categoriaRepository.obtenerPorId(id);
+        if (!categoriaActual) {
             return res.status(404).json({ error: "Categoría no encontrada" });
         }
+        
+        if (categoriaActual.Nombre !== nombre) {
+            const categoriaExistente = await categoriaRepository.obtenerPorNombre(nombre);
+            if (categoriaExistente) {
+                return res.status(409).json({ error: "Ya existe una categoría con ese nombre" });
+            }
+        }
+        
+        const categoriaActualizada = await categoriaRepository.editarCategoria(id, { nombre });
         res.status(200).json(categoriaActualizada);
     } catch (error) {
         res.status(500).json({ error: "Error al actualizar la categoría" });
@@ -44,9 +58,6 @@ export const eliminarCategoria = async (req, res) => {
     const { id } = req.params;
     try {
         const categoriaEliminada = await categoriaRepository.eliminarCategoria(id);
-        if (!categoriaEliminada) {
-            return res.status(404).json({ error: "Categoría no encontrada" });
-        }
         res.status(200).json({ message: "Categoría eliminada con éxito" });
     } catch (error) {
         res.status(500).json({ error: "Error al eliminar la categoría" });
