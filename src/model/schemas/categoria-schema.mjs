@@ -10,4 +10,4 @@ categoriaSchema.plugin(mongooseDelete, {
     overrideMethods: 'all'
 })
 
-export default mongoose.model("Categoria", categoriaSchema)
+export default categoriaSchema;
