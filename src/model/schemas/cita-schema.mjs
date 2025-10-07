@@ -16,4 +16,4 @@ citaSchema.plugin(mongooseDelete, {
 
 citaSchema.index({ Propietario: 1, Mascota: 1, Fecha: 1 }, { unique: true });
 
-export default mongoose.model("Cita", citaSchema);
+export default citaSchema;

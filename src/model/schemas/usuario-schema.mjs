@@ -34,9 +34,17 @@ usuarioSchema.virtual('citas', {
     foreignField: 'Propietario'
 })
 
-usuarioSchema.set('toJSON', { virtuals: true });
-usuarioSchema.set('toObject', { virtuals: true });
+const opciones = {
+    virtuals: true,
+    transform: function(doc, ret) {
+        delete ret.Password;
+        return ret;
+    }
+}
+
+usuarioSchema.set('toJSON', opciones);
+usuarioSchema.set('toObject', opciones);
 
 usuarioSchema.index({ Email: 1 }, { unique: true });
 
-export default mongoose.model("Usuario", usuarioSchema);
+export default usuarioSchema;

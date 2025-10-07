@@ -15,4 +15,4 @@ mascotaSchema.plugin(mongooseDelete, {
 
 mascotaSchema.index({ Nombre: 1, Propietario: 1 }, { unique: true });
 
-export default mongoose.model("Mascota", mascotaSchema);
+export default mascotaSchema;
