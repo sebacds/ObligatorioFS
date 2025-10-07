@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { validarAuth } from '../validations/usuario-validations.mjs';
+import { validarAuth } from '../validations/auth-validations.mjs';
 import 'dotenv/config';
 
 const authMiddleware = async (req, res, next) => {
@@ -15,7 +15,7 @@ const authMiddleware = async (req, res, next) => {
 
         if (error) return res.status(401).json({ errors: error.details.map(d => d.message) });
 
-        req.usuario = usuario;
+        req.usuario = value;
         next();
     } catch (error) {
         switch (error.name) {
