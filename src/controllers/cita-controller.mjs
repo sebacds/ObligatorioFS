@@ -1,12 +1,25 @@
-import citaRepository from "../repositories/citaRepository.mjs";
+import citaRepository from "../repositories/cita-repository.mjs";
 
 export const crearCita = async (req, res) => {
     try {
         const { Propietario, Mascota, Fecha, Motivo, Estado } = req.body;
-        if(obtenerCitasPorFechas(Fecha).find(cita => cita.Mascota === Mascota && cita.Propietario === Propietario)){
-            return res.status(400).json({ error: "Ya existe una cita para esta mascota y propietario en la fecha indicada" });
-        }
-        const nuevaCita = await citaRepository.crearCita({ Propietario, Mascota, Fecha, Motivo, Estado });
+        const citasDelDia = await citaRepository.obtenerPorFechas({fechaInicio: Fecha, fechaFin: Fecha});
+
+        if (citasDelDia && citasDelDia.find(cita =>
+            cita.Mascota.toString() === Mascota.toString() &&
+            cita.Propietario.toString() === Propietario.toString()
+        )) {
+            return res.status(409).json({ 
+                error: "Ya existe una cita para esta mascota y propietario en la fecha indicada" 
+            });
+        }        
+        const nuevaCita = await citaRepository.crearCita({ 
+            Propietario, 
+            Mascota, 
+            Fecha, 
+            Motivo, 
+            Estado 
+        });        
         res.status(201).json(nuevaCita);
     } catch (error) {
         res.status(500).json({ error: "Error al crear la cita" });
