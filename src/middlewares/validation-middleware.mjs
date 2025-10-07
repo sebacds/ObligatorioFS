@@ -1,4 +1,4 @@
-export const validateRequest = (schema, reqValidate) => {
+const validarRequest = (schema, reqValidate) => {
     return (req, res, next) => {
         const { error, value } = schema.validate(req[reqValidate], { abortEarly: false });
 
@@ -10,3 +10,5 @@ export const validateRequest = (schema, reqValidate) => {
         }
     }
 }
+
+export default validarRequest;
