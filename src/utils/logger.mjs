@@ -15,7 +15,7 @@ const logRequest = async (req) => {
 
         const logMsj = `[${now.toISOString()}] METHOD: ${req.method} ${req.url}\n`;
 
-        fs.mkdir(logDir, { recursive: true });
+        await fs.mkdir(logDir, { recursive: true });
         await fs.appendFile(logFile, logMsj);
     } catch (e) {
         console.error('Error escribiendo el log: ', e);

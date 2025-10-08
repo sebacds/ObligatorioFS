@@ -31,14 +31,13 @@ export const validarCrearUsuario = Joi.object({
         .messages({
             'any.only': 'El rol debe ser admin o propietario'
         }),
-    plan: Joi.string().valid('plus', 'premium').when('rol', {
+    plan: Joi.when('rol', {
         is: 'propietario',
-        then: Joi.required().default('plus'),
+        then: Joi.string().valid('plus', 'premium').default('plus'),
         otherwise: Joi.forbidden()
     })
         .messages({
-            'any.only': 'El plan debe ser plus o premium',
-            'any.required': 'Debes seleccionar un plan'
+            'any.only': 'El plan debe ser plus o premium'
         }),
     metodoPago: Joi.string().valid('debito', 'credito').allow(null).default(null)
         .messages({

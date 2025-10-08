@@ -3,7 +3,7 @@ const validarRequest = (schema, reqValidate) => {
         const { error, value } = schema.validate(req[reqValidate], { abortEarly: false });
 
         if (error) {
-            res.status(400).json({ errors: error.details.map(d => d.message) });
+            return res.status(400).json({ errors: error.details.map(d => d.message) });
         } else {
             req[reqValidate] = value;
             next();

@@ -6,7 +6,7 @@ const usuarioRepository = {
     },
 
     async obtenerPorEmail(email) {
-        return await Usuario.findOne({ email });
+        return await Usuario.findOne({ email }).select('+password');
     },
 
     async obtenerPorId(id) {
