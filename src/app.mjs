@@ -15,18 +15,16 @@ const app = express();
 
 app.disable('x-powered-by');
 
-await conectarMongo();
-await conectarRedis();
+conectarMongo();
+conectarRedis();
 
 app.use(express.json());
-app.use(xssSanitizer);
+app.use(xssSanitizer());
 
 app.use(async (req, res, next) => {
     await logRequest(req);
     next();
 });
-
-// health controller ??
 
 app.use('/api/v1', publicas);
 app.use('/api/v1/categorias', categorias);
