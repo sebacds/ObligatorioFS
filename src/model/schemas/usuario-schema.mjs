@@ -44,6 +44,4 @@ const opciones = {
 usuarioSchema.set('toJSON', opciones);
 usuarioSchema.set('toObject', opciones);
 
-usuarioSchema.index({ email: 1 }, { unique: true });
-
 export default usuarioSchema;
