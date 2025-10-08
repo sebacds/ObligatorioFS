@@ -7,20 +7,20 @@ const citaRepository = {
     },
 
     async obtenerPorId(id) {
-        return await Cita.findById(id).populate('Propietario', '-Password');
+        return await Cita.findById(id).populate('propietario', '-password');
     },
 
     async obtenerPorPropietario(idPropietario) {
-        return await Cita.find({ Propietario: idPropietario }).populate('Propietario', '-Password');
+        return await Cita.find({ propietario: idPropietario }).populate('propietario', '-password');
     },
 
     async obtenerPorFechas(data) {
         const { fechaInicio, fechaFin } = data;
-        return await Cita.find({ Fecha: { $gte: fechaInicio, $lte: fechaFin } }).populate('Propietario', '-Password');
+        return await Cita.find({ fecha: { $gte: fechaInicio, $lte: fechaFin } }).populate('propietario', '-password');
     },
 
     async obtenerPorMascota(idMascota) {
-        return await Cita.find({ Mascota: idMascota }).populate('Propietario', '-Password');
+        return await Cita.find({ mascota: idMascota }).populate('propietario', '-password');
     },
 
     async editarCita(id, data) {
@@ -29,6 +29,10 @@ const citaRepository = {
 
     async eliminarCita(id) {
         return await Cita.delete(id);
+    },
+
+    async obtenerCitas() {
+        return await Cita.find();
     }
 };
 

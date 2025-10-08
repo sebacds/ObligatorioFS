@@ -1,4 +1,4 @@
-import Usuario from "../model/usuario.mjs";
+import Usuario from '../model/usuario.mjs';
 
 const usuarioRepository = {
     async crearUsuario(data) {
@@ -6,7 +6,7 @@ const usuarioRepository = {
     },
 
     async obtenerPorEmail(email) {
-        return await Usuario.findOne({ Email: email });
+        return await Usuario.findOne({ email });
     },
 
     async obtenerPorId(id) {
@@ -19,6 +19,10 @@ const usuarioRepository = {
 
     async eliminarUsuario(id) {
         return await Usuario.delete(id);
+    },
+
+    async obtenerUsuarios() {
+        return await Usuario.find();
     }
 };
 

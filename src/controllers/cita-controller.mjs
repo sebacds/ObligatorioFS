@@ -4,21 +4,21 @@ import usuarios from '../repositories/usuario-repository.mjs';
 
 export const crearCita = async (req, res) => {
     try {
-        const { Propietario, Mascota, Fecha, Motivo } = req.body;
-        const propietarioId = req.usuario.rol == 'admin' ? Propietario : req.usuario.id;
+        const { propietario, mascota, fecha, motivo } = req.body;
+        const propietarioId = req.usuario.rol == 'admin' ? propietario : req.usuario.id;
 
-        const propietario = await usuarios.obtenerPorId(propietarioId);
-        if (!propietario) return res.status(404).json({ error: 'Propietario no encontrado' });
+        const buscarPropietario = await usuarios.obtenerPorId(propietarioId);
+        if (!buscarPropietario) return res.status(404).json({ error: 'Propietario no encontrado' });
 
-        const mascota = await mascotas.obtenerPorId(Mascota);
-        if (!mascota) return res.status(404).json({ error: 'Mascota no encontrada' });
+        const buscarMascota = await mascotas.obtenerPorId(mascota);
+        if (!buscarMascota) return res.status(404).json({ error: 'Mascota no encontrada' });
 
-        const verificarCita = await citas.obtenerPorFechas({ fechaInicio: new Date(new Date(Fecha).setHours(0,0,0,0)), fechaFin: new Date(new Date(Fecha).setHours(23,59,59,999)) });
-        if (verificarCita.find(cita => cita.Mascota._id.toString() == Mascota && cita.Propietario._id.toString() == (propietarioId))) {
+        const verificarCita = await citas.obtenerPorFechas({ fechaInicio: new Date(new Date(fecha).setHours(0,0,0,0)), fechaFin: new Date(new Date(fecha).setHours(23,59,59,999)) });
+        if (verificarCita.find(cita => cita.mascota._id.toString() == mascota && cita.propietario._id.toString() == propietarioId)) {
             return res.status(409).json({ error: 'Ya existe una cita para esta mascota y propietario en la fecha indicada' });
         }
 
-        const cita = await citas.crearCita({ Propietario: propietarioId, Mascota, Fecha, Motivo });
+        const cita = await citas.crearCita({ propietario: propietarioId, mascota, fecha, motivo });
         res.status(201).json(cita);
     } catch (error) {
         res.status(500).json({ error: 'Error al crear la cita' });
@@ -27,7 +27,7 @@ export const crearCita = async (req, res) => {
 
 export const obtenerCitasPropias = async (req, res) => {
     try {
-        res.status(200).json(await citas.obtenerPorId(req.usuario.id));
+        res.status(200).json(await citas.obtenerPorPropietario(req.usuario.id));
     } catch (error) {
         res.status(500).json({ error: 'Error al obtener las citas' });
     }
@@ -40,7 +40,7 @@ export const obtenerCitasPorMascota = async (req, res) => {
         const mascota = await mascotas.obtenerPorId(id);
         if (!mascota) return res.status(404).json({ error: 'Mascota no encontrada' });
 
-        if (req.usuario.rol != 'admin' && mascota.Propietario.toString() != req.usuario.id) {
+        if (req.usuario.rol != 'admin' && mascota.propietario._id.toString() != req.usuario.id) {
             return res.status(403).json({ error: 'No tenes permiso para ver las citas de esta mascota' });
         }
 
@@ -57,7 +57,7 @@ export const obtenerCitaPorId = async (req, res) => {
         const cita = await citas.obtenerPorId(id);
         if (!cita) return res.status(404).json({ error: 'Cita no encontrada' });
 
-        if (req.usuario.rol != 'admin' && cita.Propietario._id.toString() != req.usuario.id) {
+        if (req.usuario.rol != 'admin' && cita.propietario._id.toString() != req.usuario.id) {
             return res.status(403).json({ error: 'No tenes permiso para ver esta cita' });
         }
 
@@ -74,16 +74,16 @@ export const cancelarCita = async (req, res) => {
         const cita = await citas.obtenerPorId(id);
         if (!cita) return res.status(404).json({ error: 'Cita no encontrada' });
 
-        if (req.usuario.rol != 'admin' && cita.Propietario._id.toString() != req.usuario.id) {
-            return res.status(403).json({ error: 'No tenes permiso para ver esta cita' });
+        if (req.usuario.rol != 'admin' && cita.propietario._id.toString() != req.usuario.id) {
+            return res.status(403).json({ error: 'No tenes permiso para cancelar esta cita' });
         }
 
-        if (cita.Estado == 'cancelada') {
+        if (cita.estado == 'cancelada') {
             return res.status(400).json({ error: 'La cita ya está cancelada' });
         }
 
-        await citas.editarCita(id, { Estado: 'cancelada' })
-        res.status(200).json('La cita se canceló correctamente');
+        const actualizada = await citas.editarCita(id, { estado: 'cancelada' })
+        res.status(200).json({ message: 'La cita se canceló correctamente', cita: actualizada });
     } catch (error) {
         res.status(500).json({ error: 'Error al cancelar la cita' });
     }
@@ -105,27 +105,35 @@ export const obtenerCitasPorPropietario = async (req, res) => {
 export const editarCita = async (req, res) => {
     try {
         const { id } = req.params;
-        const { Estado } = req.body;
+        const { estado } = req.body;
 
         const estadosValidos = ['aceptada', 'cancelada', 'rechazada', 'finalizada'];
-        if (!estadosValidos.includes(Estado)) {
+        if (!estadosValidos.includes(estado)) {
             return res.status(400).json({ error: 'Estado no válido' });
         }
 
         const cita = await citas.obtenerPorId(id);
         if (!cita) return res.status(404).json({ error: 'Cita no encontrada' });
 
-        if (req.usuario.rol != 'admin' && cita.Propietario._id.toString() != req.usuario.id) {
+        if (req.usuario.rol != 'admin' && cita.propietario._id.toString() != req.usuario.id) {
             return res.status(403).json({ error: 'No tenes permiso para editar esta cita' });
         }
 
-        if (cita.Estado == Estado) {
-            return res.status(400).json({ error: `La cita ya está ${Estado}` });
+        if (cita.estado == estado) {
+            return res.status(400).json({ error: `La cita ya está ${estado}` });
         }
 
-        await citas.editarCita(id, { Estado });
-        res.status(200).json('El estado se actualizó correctamente');
+        const actualizada = await citas.editarCita(id, { estado });
+        res.status(200).json({ message: 'El estado se actualizó correctamente', cita: actualizada });
     } catch (error) {
-        res.status(500).json({ error: 'Error al cancelar la cita' });
+        res.status(500).json({ error: 'Error al editar la cita' });
+    }
+}
+
+export const obtenerCitas = async (req, res) => {
+    try {
+        res.status(200).json(await citas.obtenerCitas());
+    } catch (error) {
+        res.status(500).json({ error: 'Error al obtener las citas' });
     }
 }

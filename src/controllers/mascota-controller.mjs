@@ -4,27 +4,27 @@ import categorias from '../repositories/categoria-repository.mjs';
 
 export const crearMascota = async (req, res) => {
     try {
-        const { Nombre, FechaNacimiento, Categoria } = req.body;
-        const Propietario = req.usuario.rol == 'admin' ? req.body.Propietario : req.usuario.id;
+        const { nombre, fechaNacimiento, categoria } = req.body;
+        const propietario = req.usuario.rol == 'admin' ? req.body.propietario : req.usuario.id;
 
-        const propietario = await usuarios.obtenerPorId(Propietario);
-        if (!propietario) return res.status(404).json({ error: 'Propietario no encontrado' });
+        const propietarioDoc = await usuarios.obtenerPorId(propietario);
+        if (!propietarioDoc) return res.status(404).json({ error: 'Propietario no encontrado' });
 
-        if (propietario.Plan == 'plus' && await mascotas.contarPorPropietario(Propietario) >= 10) {
+        if (propietarioDoc.plan == 'plus' && await mascotas.contarPorPropietario(propietario) >= 10) {
             return res.status(403).json({ error: 'El propietario ha alcanzado el límite de mascotas para su plan' });
         }
 
-        const categoria = await categorias.obtenerPorId(Categoria);
-        if (!categoria) return res.status(404).json({ error: 'Categoría no encontrada' });
+        const categoriaDoc = await categorias.obtenerPorId(categoria);
+        if (!categoriaDoc) return res.status(404).json({ error: 'Categoría no encontrada' });
 
-        if (new Date(FechaNacimiento) > new Date()) {
+        if (new Date(fechaNacimiento) > new Date()) {
             return res.status(400).json({ error: 'La fecha de nacimiento no puede ser en el futuro' });
         }
 
-        const mascota = await mascotas.crearMascota({ Nombre, FechaNacimiento, Categoria, Propietario });
+        const mascota = await mascotas.crearMascota({ nombre, fechaNacimiento, categoria, propietario });
         res.status(201).json(mascota);
     } catch (error) {
-        res.status(500).json({ error: "Error al crear la mascota" });
+        res.status(500).json({ error: 'Error al crear la mascota' });
     }
 }
 
@@ -32,7 +32,7 @@ export const obtenerMascotasPropias = async (req, res) => {
     try {
         res.status(200).json(await mascotas.obtenerPorPropietario(req.usuario.id));
     } catch (error) {
-        res.status(500).json({ error: "Error al obtener las mascotas" });
+        res.status(500).json({ error: 'Error al obtener las mascotas' });
     }
 }
 
@@ -43,7 +43,7 @@ export const obtenerMascotaPorId = async (req, res) => {
         const mascota = await mascotas.obtenerPorId(id);
         if (!mascota) return res.status(404).json({ error: 'Mascota no encontrada' });
 
-        if (req.usuario.rol != 'admin' && mascota.Propietario._id.toString() != req.usuario.id) {
+        if (req.usuario.rol != 'admin' && mascota.propietario._id.toString() != req.usuario.id) {
             return res.status(403).json({ error: 'No tenes permiso para ver esta mascota' });
         }
 
@@ -56,35 +56,36 @@ export const obtenerMascotaPorId = async (req, res) => {
 export const editarMascota = async (req, res) => {
     try {
         const { id } = req.params;
-        const { Nombre, FechaNacimiento, Categoria } = req.body;
+        const { nombre, fechaNacimiento, categoria } = req.body;
 
         const mascota = await mascotas.obtenerPorId(id);
         if (!mascota) return res.status(404).json({ error: 'Mascota no encontrada' });
 
-        if (req.usuario.rol != 'admin' && mascota.Propietario._id.toString() != req.usuario.id) {
+        if (req.usuario.rol != 'admin' && mascota.propietario._id.toString() != req.usuario.id) {
             return res.status(403).json({ error: 'No tenes permiso para editar esta mascota' });
         }
 
         const data = {};
 
-        if (Nombre) data.Nombre = Nombre;
+        if (nombre) data.nombre = nombre;
 
-        if (FechaNacimiento) {
-            if (new Date(FechaNacimiento) > new Date()) {
+        if (fechaNacimiento) {
+            if (new Date(fechaNacimiento) > new Date()) {
                 return res.status(400).json({ error: 'La fecha de nacimiento no puede ser en el futuro' });
             }
 
-            data.FechaNacimiento = FechaNacimiento;
+            data.fechaNacimiento = fechaNacimiento;
         }
         
-        if (Categoria) {
-            const categoria = await categorias.obtenerPorId(Categoria);
-            if (!categoria) return res.status(404).json({ error: 'Categoría no encontrada' });
+        if (categoria) {
+            const buscarCategoria = await categorias.obtenerPorId(categoria);
+            if (!buscarCategoria) return res.status(404).json({ error: 'Categoría no encontrada' });
 
-            data.Categoria = Categoria;
+            data.categoria = categoria;
         }
 
-        res.status(200).json(await mascotas.editarMascota(id, data));
+        const actualizada = await mascotas.editarMascota(id, data);
+        res.status(200).json(actualizada);
     } catch (error) {
         res.status(500).json({ error: 'Error al editar la mascota' });
     }
@@ -97,7 +98,7 @@ export const eliminarMascota = async (req, res) => {
         const mascota = await mascotas.obtenerPorId(id);
         if (!mascota) return res.status(404).json({ error: 'Mascota no encontrada' });
 
-        if (req.usuario.rol != 'admin' && mascota.Propietario._id.toString() != req.usuario.id) {
+        if (req.usuario.rol != 'admin' && mascota.propietario._id.toString() != req.usuario.id) {
             return res.status(403).json({ error: 'No tenes permiso para eliminar esta mascota' });
         }
 
@@ -110,8 +111,8 @@ export const eliminarMascota = async (req, res) => {
 
 export const obtenerMascotasPorPropietario = async (req, res) => {
     try {
-        const mascotas = await mascotas.obtenerPorPropietario(req.params.id);
-        res.status(200).json(mascotas);
+        const lista = await mascotas.obtenerPorPropietario(req.params.id);
+        res.status(200).json(lista);
     } catch (error) {
         res.status(500).json({ error: 'Error al obtener las mascotas del propietario' });
     }

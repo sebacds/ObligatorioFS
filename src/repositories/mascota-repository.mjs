@@ -7,19 +7,19 @@ const mascotaRepository = {
     },
 
     async obtenerMascotas() {
-        return await Mascota.find().populate('Propietario', '-Password');
+        return await Mascota.find().populate('propietario', '-password');
     },
 
     async obtenerPorId(id) {
-        return await Mascota.findById(id).populate('Propietario', '-Password');
+        return await Mascota.findById(id).populate('propietario', '-password');
     },
 
     async obtenerPorPropietario(idPropietario) {
-        return await Mascota.find({ Propietario: idPropietario }).populate('Propietario', '-Password');
+        return await Mascota.find({ propietario: idPropietario }).populate('propietario', '-password');
     },
 
     async editarMascota(id, data) { 
-        return await Mascota.findByIdAndUpdate(id, data, { new: true }).populate('Propietario', '-Password');
+        return await Mascota.findByIdAndUpdate(id, data, { new: true }).populate('propietario', '-password');
     },
 
     async eliminarMascota(id) {
@@ -27,7 +27,7 @@ const mascotaRepository = {
     },
 
     async contarPorPropietario(idPropietario) {
-        return await Mascota.countDocuments({ Propietario: idPropietario });
+        return await Mascota.countDocuments({ propietario: idPropietario });
     }
 };
 
