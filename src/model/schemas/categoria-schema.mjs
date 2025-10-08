@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import mongooseDelete from 'mongoose-delete';
 
 const categoriaSchema = new mongoose.Schema({
-    Nombre: { type: String, required: true }
+    nombre: { type: String, required: true }
 }, { timestamps: true })
 
 categoriaSchema.plugin(mongooseDelete, {

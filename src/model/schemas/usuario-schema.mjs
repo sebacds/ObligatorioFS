@@ -1,19 +1,19 @@
-import mongoose from "mongoose";
-import mongooseDelete from "mongoose-delete";
+import mongoose from 'mongoose';
+import mongooseDelete from 'mongoose-delete';
 
 const usuarioSchema = new mongoose.Schema({
-    Nombre: { type: String, required: true, minLength: 3, match: [/^[\p{L}\s]+$/u, 'El nombre solo puede contener letras'] },
-    Apellido: { type: String, required: true, minLength: 3, match: [/^[\p{L}\s]+$/u, 'El apellido solo puede contener letras'] },
-    Email: { type: String, required: true, unique: true, lowercase: true, trim: true, match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Email inválido'] },
-    Password: { type: String, required: true, minLength: 8 },
-    Rol: { type: String, enum: ['admin', 'propietario'], default: 'propietario' },
-    Plan: { type: String, enum: ['plus', 'premium'], required: () => {
-        return this.Rol == 'propietario';
+    nombre: { type: String, required: true, minLength: 3, match: [/^[\p{L}\s]+$/u, 'El nombre solo puede contener letras'] },
+    apellido: { type: String, required: true, minLength: 3, match: [/^[\p{L}\s]+$/u, 'El apellido solo puede contener letras'] },
+    email: { type: String, required: true, unique: true, lowercase: true, trim: true, match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Email inválido'] },
+    password: { type: String, required: true, minLength: 8 },
+    rol: { type: String, enum: ['admin', 'propietario'], default: 'propietario' },
+    plan: { type: String, enum: ['plus', 'premium'], required: () => {
+        return this.rol == 'propietario';
     }, default: () => {
-        return this.Rol == 'propietario' ? 'plus' : undefined;
+        return this.rol == 'propietario' ? 'plus' : undefined;
     } },
-    MetodoPago: { type: String, enum: ['debito', 'credito'], default: null },
-    FechaPago: { type: Date, default: null }
+    metodoPago: { type: String, enum: ['debito', 'credito'], default: null },
+    fechaPago: { type: Date, default: null }
 }, { timestamps: true })
 
 usuarioSchema.plugin(mongooseDelete, {
@@ -24,19 +24,19 @@ usuarioSchema.plugin(mongooseDelete, {
 usuarioSchema.virtual('mascotas', {
     ref: 'Mascota',
     localField: '_id',
-    foreignField: 'Propietario'
+    foreignField: 'propietario'
 })
 
 usuarioSchema.virtual('citas', {
     ref: 'Cita',
     localField: '_id',
-    foreignField: 'Propietario'
+    foreignField: 'propietario'
 })
 
 const opciones = {
     virtuals: true,
     transform: function(doc, ret) {
-        delete ret.Password;
+        delete ret.password;
         return ret;
     }
 }
@@ -44,6 +44,6 @@ const opciones = {
 usuarioSchema.set('toJSON', opciones);
 usuarioSchema.set('toObject', opciones);
 
-usuarioSchema.index({ Email: 1 }, { unique: true });
+usuarioSchema.index({ email: 1 }, { unique: true });
 
 export default usuarioSchema;
