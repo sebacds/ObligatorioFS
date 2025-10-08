@@ -14,6 +14,10 @@ const categoriaRepository = {
         return await Categoria.find();
     },
 
+    async obtenerPorNombre(data) {
+        return await Categoria.findOne({ nombre: data });
+    },
+
     async editarCategoria(id, data) {
         return await Categoria.findByIdAndUpdate( id, data, { new: true } );
     },
