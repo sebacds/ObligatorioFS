@@ -4,7 +4,7 @@ import { obtenerCitas, crearCita, obtenerCitasPropias, obtenerCitasPorMascota, o
 import { validarCrearCita, validarObtenerCitasPorMascota, validarObtenerCitaPorId, validarCancelarCita, validarObtenerCitasPorPropietario, validarEditarCita } from '../../validations/cita-validations.mjs';
 import validarRequest from '../../middlewares/validation-middleware.mjs';
 import authMiddleware from '../../middlewares/auth-middleware.mjs';
-import validarRolMiddleware from '../../middlewares/rol-middleware.mjs';
+import validarRolMiddleware from '../../middlewares/validar-rol-middleware.mjs';
 
 const routes = express.Router();
 
