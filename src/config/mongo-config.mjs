@@ -6,6 +6,7 @@ const {
     MONGO_PORT,
     MONGO_DB_NAME,
     BD_EN_USO,
+    MONGO_ATLAS_HOST,
     MONGO_ATLAS_USUARIO,
     MONGO_ATLAS_PASSWORD
 } = process.env;
@@ -13,7 +14,7 @@ const {
 let mongoUri = `mongodb://${MONGO_HOST}:${MONGO_PORT}/${MONGO_DB_NAME}`;
 
 if (BD_EN_USO == 'atlas') {
-    mongoUri = `mongodb+srv://${MONGO_ATLAS_USUARIO}:${MONGO_ATLAS_PASSWORD}@${MONGO_HOST}/${MONGO_DB_NAME}?retryWrites=true&w=majority`;
+    mongoUri = `mongodb+srv://${MONGO_ATLAS_USUARIO}:${MONGO_ATLAS_PASSWORD}@${MONGO_ATLAS_HOST}/${MONGO_DB_NAME}?retryWrites=true&w=majority`;
 }
 
 async function conectarMongo() {
