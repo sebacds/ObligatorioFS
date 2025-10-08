@@ -1,3 +1,4 @@
+
 import mascotas from '../repositories/mascota-repository.mjs';
 import usuarios from '../repositories/usuario-repository.mjs';
 import categorias from '../repositories/categoria-repository.mjs';
@@ -23,7 +24,9 @@ export const crearMascota = async (req, res) => {
 
         const mascota = await mascotas.crearMascota({ Nombre, FechaNacimiento, Categoria, Propietario });
         res.status(201).json(mascota);
+
     } catch (error) {
+        console.error("Error al crear mascota:", error);
         res.status(500).json({ error: "Error al crear la mascota" });
     }
 }
