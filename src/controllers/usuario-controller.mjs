@@ -1,4 +1,4 @@
-import usuarios from "../repositories/usuario-repository.mjs";
+import usuarios from '../repositories/usuario-repository.mjs';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
@@ -102,9 +102,9 @@ export const obtenerUsuarioPorId = async (req, res) => {
 }
 
 export const editarUsuarioPorId = async (req, res) => {
-    const { id } = req.params;
-
     try {
+        const { id } = req.params;
+
         const usuario = await usuarios.obtenerPorId(id);
         if (!usuario) return res.status(404).json({ error: "Usuario no encontrado" });
 
@@ -144,10 +144,10 @@ export const eliminarUsuarioPorId = async (req, res) => {
 }
 
 export const pagar = async (req, res) => {
-    const { MetodoPago } = req.body;
-    const id = req.usuario.id;
-
     try {
+        const { MetodoPago } = req.body;
+        const id = req.usuario.id;
+
         const usuario = await usuarios.obtenerPorId(id);
         if (!usuario) {
             return res.status(404).json({ error: "Usuario no encontrado" });

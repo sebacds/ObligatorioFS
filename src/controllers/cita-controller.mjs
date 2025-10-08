@@ -1,93 +1,131 @@
-import citaRepository from "../repositories/citaRepository.mjs";
+import citas from '../repositories/cita-repository.mjs';
+import mascotas from '../repositories/mascota-repository.mjs';
+import usuarios from '../repositories/usuario-repository.mjs';
 
 export const crearCita = async (req, res) => {
     try {
-        const { Propietario, Mascota, Fecha, Motivo, Estado } = req.body;
-        if(obtenerCitasPorFechas(Fecha).find(cita => cita.Mascota === Mascota && cita.Propietario === Propietario)){
-            return res.status(400).json({ error: "Ya existe una cita para esta mascota y propietario en la fecha indicada" });
-        }
-        const nuevaCita = await citaRepository.crearCita({ Propietario, Mascota, Fecha, Motivo, Estado });
-        res.status(201).json(nuevaCita);
-    } catch (error) {
-        res.status(500).json({ error: "Error al crear la cita" });
-    }
-};
+        const { Propietario, Mascota, Fecha, Motivo } = req.body;
+        const propietarioId = req.usuario.rol == 'admin' ? Propietario : req.usuario.id;
 
-export const obtenerCitasPorPropietario = async (req, res) => {
-    const { propietarioId } = req.params;
-    try {
-        const citas = await citaRepository.obtenerPorPropietario(propietarioId);
-        if (!citas || citas.length === 0) {
-            return res.status(404).json({ error: "No se encontraron citas para este propietario" });
-        }
-        res.status(200).json(citas);
-    } catch (error) {
-        res.status(500).json({ error: "Error al obtener las citas del propietario" });
-    }
-};
+        const propietario = await usuarios.obtenerPorId(propietarioId);
+        if (!propietario) return res.status(404).json({ error: 'Propietario no encontrado' });
 
-export const obtenerCitasPorFechas = async (req, res) => {
-    const { fechaInicio, fechaFin } = req.query;
-    try {
-        const citas = await citaRepository.obtenerPorFechas(fechaInicio, fechaFin);
-        if (!citas || citas.length === 0) {
-            return res.status(404).json({ error: "No se encontraron citas en este rango de fechas" });
-        }
-        res.status(200).json(citas);
-    } catch (error) {
-        res.status(500).json({ error: "Error al obtener las citas por fechas" });
-    }
-};
+        const mascota = await mascotas.obtenerPorId(Mascota);
+        if (!mascota) return res.status(404).json({ error: 'Mascota no encontrada' });
 
-export const obtenerCitaPorId = async (req, res) => {
-    const { id } = req.params;
-    try {
-        const cita = await citaRepository.obtenerPorId(id);
-        if (!cita) {
-            return res.status(404).json({ error: "Cita no encontrada" });
+        const verificarCita = await citas.obtenerPorFechas({ fechaInicio: new Date(new Date(Fecha).setHours(0,0,0,0)), fechaFin: new Date(new Date(Fecha).setHours(23,59,59,999)) });
+        if (verificarCita.find(cita => cita.Mascota._id.toString() == Mascota && cita.Propietario._id.toString() == (propietarioId))) {
+            return res.status(409).json({ error: 'Ya existe una cita para esta mascota y propietario en la fecha indicada' });
         }
-        res.status(200).json(cita);
+
+        const cita = await citas.crearCita({ Propietario: propietarioId, Mascota, Fecha, Motivo });
+        res.status(201).json(cita);
     } catch (error) {
-        res.status(500).json({ error: "Error al obtener la cita por ID" });
+        res.status(500).json({ error: 'Error al crear la cita' });
     }
-};
+}
+
+export const obtenerCitasPropias = async (req, res) => {
+    try {
+        res.status(200).json(await citas.obtenerPorId(req.usuario.id));
+    } catch (error) {
+        res.status(500).json({ error: 'Error al obtener las citas' });
+    }
+}
 
 export const obtenerCitasPorMascota = async (req, res) => {
-    const { mascotaId } = req.params;
     try {
-        const citas = await citaRepository.obtenerPorMascota(mascotaId);
-        if (!citas || citas.length === 0) {
-            return res.status(404).json({ error: "No se encontraron citas para esta mascota" });
+        const { id } = req.params;
+
+        const mascota = await mascotas.obtenerPorId(id);
+        if (!mascota) return res.status(404).json({ error: 'Mascota no encontrada' });
+
+        if (req.usuario.rol != 'admin' && mascota.Propietario.toString() != req.usuario.id) {
+            return res.status(403).json({ error: 'No tenes permiso para ver las citas de esta mascota' });
         }
-        res.status(200).json(citas);
+
+        res.status(200).json(await citas.obtenerPorMascota(id));
     } catch (error) {
-        res.status(500).json({ error: "Error al obtener las citas de la mascota" });
+        res.status(500).json({ error: 'Error al obtener las citas por mascota' });
     }
-};
+}
+
+export const obtenerCitaPorId = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const cita = await citas.obtenerPorId(id);
+        if (!cita) return res.status(404).json({ error: 'Cita no encontrada' });
+
+        if (req.usuario.rol != 'admin' && cita.Propietario._id.toString() != req.usuario.id) {
+            return res.status(403).json({ error: 'No tenes permiso para ver esta cita' });
+        }
+
+        res.status(200).json(cita);
+    } catch (error) {
+        res.status(500).json({ error: 'Error al obtener la cita por ID' });
+    }
+}
+
+export const cancelarCita = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const cita = await citas.obtenerPorId(id);
+        if (!cita) return res.status(404).json({ error: 'Cita no encontrada' });
+
+        if (req.usuario.rol != 'admin' && cita.Propietario._id.toString() != req.usuario.id) {
+            return res.status(403).json({ error: 'No tenes permiso para ver esta cita' });
+        }
+
+        if (cita.Estado == 'cancelada') {
+            return res.status(400).json({ error: 'La cita ya está cancelada' });
+        }
+
+        await citas.editarCita(id, { Estado: 'cancelada' })
+        res.status(200).json('La cita se canceló correctamente');
+    } catch (error) {
+        res.status(500).json({ error: 'Error al cancelar la cita' });
+    }
+}
+
+export const obtenerCitasPorPropietario = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const propietario = await usuarios.obtenerPorId(id);
+        if (!propietario) return res.status(404).json({ error: 'Propietario no encontrado' });
+
+        res.status(200).json(await citas.obtenerPorPropietario(id));
+    } catch (error) {
+        res.status(500).json({ error: 'Error al obtener las citas del propietario' });
+    }
+}
 
 export const editarCita = async (req, res) => {
-    const { id } = req.params;
-    const { Propietario, Mascota, Fecha, Motivo, Estado } = req.body;
     try {
-        const citaActualizada = await citaRepository.editarCita(id, { Propietario, Mascota, Fecha, Motivo, Estado });
-        if (!citaActualizada) {
-            return res.status(404).json({ error: "Cita no encontrada" });
-        }
-        res.status(200).json(citaActualizada);
-    } catch (error) {
-        res.status(500).json({ error: "Error al actualizar la cita" });
-    }
-};
+        const { id } = req.params;
+        const { Estado } = req.body;
 
-export const eliminarCita = async (req, res) => {
-    const { id } = req.params;
-    try {
-        const citaEliminada = await citaRepository.eliminarCita(id);
-        if (!citaEliminada) {
-            return res.status(404).json({ error: "Cita no encontrada" });
+        const estadosValidos = ['aceptada', 'cancelada', 'rechazada', 'finalizada'];
+        if (!estadosValidos.includes(Estado)) {
+            return res.status(400).json({ error: 'Estado no válido' });
         }
-        res.status(200).json({ message: "Cita eliminada con éxito" });
+
+        const cita = await citas.obtenerPorId(id);
+        if (!cita) return res.status(404).json({ error: 'Cita no encontrada' });
+
+        if (req.usuario.rol != 'admin' && cita.Propietario._id.toString() != req.usuario.id) {
+            return res.status(403).json({ error: 'No tenes permiso para editar esta cita' });
+        }
+
+        if (cita.Estado == Estado) {
+            return res.status(400).json({ error: `La cita ya está ${Estado}` });
+        }
+
+        await citas.editarCita(id, { Estado });
+        res.status(200).json('El estado se actualizó correctamente');
     } catch (error) {
-        res.status(500).json({ error: "Error al eliminar la cita" });
+        res.status(500).json({ error: 'Error al cancelar la cita' });
     }
-};
+}

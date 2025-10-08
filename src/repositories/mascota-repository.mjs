@@ -24,6 +24,10 @@ const mascotaRepository = {
 
     async eliminarMascota(id) {
         return await Mascota.delete(id);
+    },
+
+    async contarPorPropietario(idPropietario) {
+        return await Mascota.countDocuments({ Propietario: idPropietario });
     }
 };
 
