@@ -1,6 +1,6 @@
 import express from 'express';
 import reqValidate from '../../constants/request-validate-constants.mjs';
-import { obtenerPerfil, editarPerfil, eliminarPerfil, pagar, obtenerUsuarios, obtenerUsuarioPorId, editarUsuarioPorId, eliminarUsuarioPorId } from '../../controllers/usuario-controller.mjs';
+import { obtenerPerfil, editarPerfil, eliminarPerfil, pagar, obtenerUsuarios, obtenerUsuarioPorId, editarUsuarioPorId, eliminarUsuarioPorId, crearAdmin } from '../../controllers/usuario-controller.mjs';
 import { validarObtenerUsuarioPorId, validarEditarUsuario, validarPagar, validarEliminarUsuario, validarCrearUsuario } from '../../validations/usuario-validations.mjs';
 import validarRequest from '../../middlewares/validation-middleware.mjs';
 import authMiddleware from '../../middlewares/auth-middleware.mjs';
