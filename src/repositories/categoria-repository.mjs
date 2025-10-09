@@ -23,7 +23,7 @@ const categoriaRepository = {
     },
 
     async eliminarCategoria(id) {
-        return await Categoria.delete(id);
+        return await Categoria.delete({ _id: id });
     },
 
     async obtenerPorNombre(nombre) {

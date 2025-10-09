@@ -21,12 +21,13 @@ conectarRedis();
 
 app.use(express.json());
 app.use(xssSanitizer);
-app.use('api/v1', limiter);
 
 app.use(async (req, res, next) => {
     await logRequest(req);
     next();
 });
+
+app.use('/api/v1', limiter);
 
 app.use('/api/v1', publicas);
 app.use('/api/v1/categorias', categorias);
