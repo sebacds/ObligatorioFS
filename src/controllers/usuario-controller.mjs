@@ -22,6 +22,26 @@ export const crearUsuario = async (req, res) => {
     }   
 }
 
+export const crearAdmin = async (req, res) => {
+    try {
+        const { nombre, apellido, email, password } = req.body;
+
+        if (await usuarios.obtenerPorEmail(email)) {
+            return res.status(409).json({ error: 'El email ya está en uso' });
+        }
+
+        const hashPassword = await bcrypt.hash(password, 10);
+        
+        const usuario = await usuarios.crearUsuario({ nombre, apellido, email, password: hashPassword, rol: 'admin' });
+
+        const token = jwt.sign({ id: usuario._id, email: usuario.email, rol: usuario.rol, plan: usuario.plan }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        res.status(201).json({ usuario, token });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al crear el usuario' });
+    }   
+}
+
 export const obtenerPerfil = async (req, res) => {
     try {
         const usuario = await usuarios.obtenerPorId(req.usuario.id);
