@@ -19,7 +19,7 @@ conectarMongo();
 conectarRedis();
 
 app.use(express.json());
-app.use(xssSanitizer());
+app.use(xssSanitizer);
 
 app.use(async (req, res, next) => {
     await logRequest(req);
