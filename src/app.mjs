@@ -10,6 +10,7 @@ import citas from './routes/v1/cita.mjs';
 import mascotas from './routes/v1/mascota.mjs';
 import usuarios from './routes/v1/usuario.mjs';
 import rutaNoEncontrada from './middlewares/not-found-middleware.mjs';
+import limiter from './middlewares/limiter-middleware.mjs';
 
 const app = express();
 
@@ -20,6 +21,7 @@ conectarRedis();
 
 app.use(express.json());
 app.use(xssSanitizer);
+app.use('api/v1', limiter);
 
 app.use(async (req, res, next) => {
     await logRequest(req);
