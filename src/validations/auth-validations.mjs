@@ -18,7 +18,7 @@ export const validarAuth = Joi.object({
             'any.only': 'El rol debe ser admin o propietario',
             'any.required': 'El rol es requerido'
         }),
-    plan: Joi.string().valid('plus', 'premium')
+    plan: Joi.string().valid('plus', 'premium').allow(null)
         .messages({
             'any.only': 'El plan debe ser plus o premium'
         }),
