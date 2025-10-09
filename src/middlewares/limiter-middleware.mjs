@@ -1,7 +1,7 @@
 import rateLimiter from 'express-rate-limit';
 
 const limiter = rateLimiter({
-    windowsMs: 10 * 1000,
+    windowMs: 10 * 1000,
     max: 5,
     message: {
         status: 429,
