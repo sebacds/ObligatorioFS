@@ -28,7 +28,7 @@ const citaRepository = {
     },
 
     async eliminarCita(id) {
-        return await Cita.delete(id);
+        return await Cita.delete({ _id: id });
     },
 
     async obtenerCitas() {

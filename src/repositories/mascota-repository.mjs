@@ -23,7 +23,7 @@ const mascotaRepository = {
     },
 
     async eliminarMascota(id) {
-        return await Mascota.delete(id);
+        return await Mascota.delete({ _id: id });
     },
 
     async contarPorPropietario(idPropietario) {

@@ -16,7 +16,7 @@ routes.post('/', validarRequest(validarCrearCita, reqValidate.BODY), crearCita);
 routes.get('/mis-citas', obtenerCitasPropias);
 routes.get('/mascota/:id', validarRequest(validarObtenerCitasPorMascota, reqValidate.PARAMS), obtenerCitasPorMascota);
 routes.get('/:id', validarRequest(validarObtenerCitaPorId, reqValidate.PARAMS), obtenerCitaPorId);
-routes.patch('/:id/cancelar', validarRequest(validarCancelarCita, reqValidate.PARAMS), cancelarCita);
+routes.patch('/cancelar/:id', validarRequest(validarCancelarCita, reqValidate.PARAMS), cancelarCita);
 
 routes.use(validarRolMiddleware(['admin']));
 routes.get('/propietario/:id', validarRequest(validarObtenerCitasPorPropietario, reqValidate.PARAMS), obtenerCitasPorPropietario);
