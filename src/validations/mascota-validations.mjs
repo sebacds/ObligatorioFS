@@ -20,7 +20,8 @@ export const validarCrearMascota = Joi.object({
             'string.empty': 'Debes seleccionar una categoría',
             'string.length': 'El id de la categoría no es válido',
             'any.required': 'Debes seleccionar una categoría'
-        })
+        }),
+    foto: Joi.string().uri().optional()
 });
 
 export const validarObtenerMascotaPorId = Joi.object({
@@ -53,7 +54,8 @@ export const validarEditarMascota = Joi.object({
     categoria: Joi.string().hex().length(24)
         .messages({
             'string.length': 'El id de la categoría no es válido'
-        })
+        }),
+    foto: Joi.string().uri().optional()
 }).min(1)
     .messages({
         'object.min': 'Debes proporcionar al menos un campo para actualizar'

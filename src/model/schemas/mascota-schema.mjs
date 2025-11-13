@@ -20,6 +20,11 @@ const mascotaSchema = new mongoose.Schema({
         ref: 'Categoria', 
         required: true 
     },
+    foto: {
+        type: String,
+        required: false,
+        default: ''
+    }
 }, { timestamps: true })
 
 mascotaSchema.plugin(mongooseDelete, {

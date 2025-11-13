@@ -36,7 +36,6 @@ export const validarLogin = Joi.object({
     password: Joi.string().min(8).required()
         .messages({
             'string.empty': 'La contraseña es requerida',
-            'string.min': 'La contraseña debe tener al menos 8 caracteres',
             'any.required': 'La contraseña es requerida'
         })
 });

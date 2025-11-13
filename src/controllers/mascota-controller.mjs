@@ -5,7 +5,7 @@ import categorias from '../repositories/categoria-repository.mjs';
 
 export const crearMascota = async (req, res) => {
     try {
-        const { nombre, fechaNacimiento, categoria } = req.body;
+        const { nombre, fechaNacimiento, categoria, foto } = req.body;
         const propietario = req.usuario.rol == 'admin' ? req.body.propietario : req.usuario.id;
 
         const propietarioDoc = await usuarios.obtenerPorId(propietario);
@@ -22,7 +22,7 @@ export const crearMascota = async (req, res) => {
             return res.status(400).json({ error: 'La fecha de nacimiento no puede ser en el futuro' });
         }
 
-        const mascota = await mascotas.crearMascota({ nombre, fechaNacimiento, categoria, propietario });
+        const mascota = await mascotas.crearMascota({ nombre, fechaNacimiento, categoria, propietario, foto });
         res.status(201).json(mascota);
 
     } catch (error) {
@@ -58,7 +58,7 @@ export const obtenerMascotaPorId = async (req, res) => {
 export const editarMascota = async (req, res) => {
     try {
         const { id } = req.params;
-        const { nombre, fechaNacimiento, categoria } = req.body;
+        const { nombre, fechaNacimiento, categoria, foto } = req.body;
 
         const mascota = await mascotas.obtenerPorId(id);
         if (!mascota) return res.status(404).json({ error: 'Mascota no encontrada' });
@@ -85,6 +85,8 @@ export const editarMascota = async (req, res) => {
 
             data.categoria = categoria;
         }
+
+        if (foto) data.foto = foto;
 
         const actualizada = await mascotas.editarMascota(id, data);
         res.status(200).json(actualizada);

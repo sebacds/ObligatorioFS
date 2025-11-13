@@ -11,6 +11,7 @@ import mascotas from './routes/v1/mascota.mjs';
 import usuarios from './routes/v1/usuario.mjs';
 import rutaNoEncontrada from './middlewares/not-found-middleware.mjs';
 import limiter from './middlewares/limiter-middleware.mjs';
+import cors from 'cors';
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.disable('x-powered-by');
 conectarMongo();
 conectarRedis();
 
+app.use(cors())
 app.use(express.json());
 app.use(xssSanitizer);
 
@@ -27,7 +29,7 @@ app.use(async (req, res, next) => {
     next();
 });
 
-// app.use('/api/v1', limiter); Comentado para poder testear con postman sin limitaciones
+app.use('/api/v1', limiter);
 
 app.use('/api/v1', publicas);
 app.use('/api/v1/categorias', categorias);
