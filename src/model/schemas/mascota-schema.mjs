@@ -23,7 +23,7 @@ const mascotaSchema = new mongoose.Schema({
     foto: {
         type: String,
         required: false,
-        default: ''
+        default: 'http://res.cloudinary.com/ditcqmbn7/image/upload/v1763065583/hb43xgwf7fldajuhirek.png'
     }
 }, { timestamps: true })
 
