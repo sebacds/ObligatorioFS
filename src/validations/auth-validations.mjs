@@ -33,7 +33,7 @@ export const validarLogin = Joi.object({
             'string.email': 'Debes proporcionar un correo electrónico válido',
             'any.required': 'El correo electrónico es requerido'
         }),
-    password: Joi.string().min(8).required()
+    password: Joi.string().required()
         .messages({
             'string.empty': 'La contraseña es requerida',
             'any.required': 'La contraseña es requerida'
