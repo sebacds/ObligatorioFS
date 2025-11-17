@@ -29,7 +29,7 @@ app.use(async (req, res, next) => {
     next();
 });
 
-app.use('/api/v1', limiter);
+// app.use('/api/v1', limiter);
 
 app.use('/api/v1', publicas);
 app.use('/api/v1/categorias', categorias);
